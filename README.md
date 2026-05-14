@@ -101,23 +101,27 @@ export const API_BASE_URL = 'http://192.168.x.x:3001';
 
 ### 6. Run both servers
 
-Open **two terminal windows**:
-
-**Terminal 1 — Backend:**
+**Option A — One command (from the repo root):**
 ```bash
-cd backend
+cd bistro   # repo root
 npm run dev
+```
+This starts both backend and frontend simultaneously using `concurrently`.
+> Note: the QR code is hidden in this mode. **First time:** use Option B to scan the QR code — Expo Go will remember the project. **After that:** use `npm run dev` from root, then tap the project in Expo Go's Recent list to reconnect.
+
+**Option B — Two terminal windows (shows QR code):**
+
+Terminal 1:
+```bash
+cd backend && npm run dev
 # → Bistro backend running on http://localhost:3001
 ```
 
-**Terminal 2 — Frontend:**
+Terminal 2:
 ```bash
-cd frontend
-npx expo start
-# → Scan the QR code with your phone's camera app
+cd frontend && npx expo start
+# → Scan the QR code with your phone's camera app to open in Expo Go
 ```
-
-Open **Expo Go** on your phone and scan the QR code. The app will load.
 
 ---
 
