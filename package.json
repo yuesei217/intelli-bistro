@@ -7,9 +7,9 @@
     "doc": "docs"
   },
   "scripts": {
-    "dev": "concurrently --names \"backend,frontend\" --prefix-colors \"yellow,cyan\" \"npm run dev --prefix backend\" \"npm start --prefix frontend\"",
+    "dev": "concurrently --names \"backend,frontend\" --prefix-colors \"yellow,cyan\" \"npm run dev --prefix backend\" \"EXPO_PUBLIC_API_URL=http://$(ipconfig getifaddr en0):3001 npm start --prefix frontend\"",
     "backend": "npm run dev --prefix backend",
-    "frontend": "npm start --prefix frontend"
+    "frontend": "EXPO_PUBLIC_API_URL=http://$(ipconfig getifaddr en0):3001 npm start --prefix frontend"
   },
   "repository": {
     "type": "git",
