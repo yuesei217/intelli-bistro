@@ -1,0 +1,29 @@
+{
+  "name": "bistro",
+  "version": "1.0.0",
+  "description": "first test commit",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "dev": "concurrently --names \"backend,frontend\" --prefix-colors \"yellow,cyan\" \"npm run dev --prefix backend\" \"npm start --prefix frontend\"",
+    "backend": "npm run dev --prefix backend",
+    "frontend": "npm start --prefix frontend"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yuesei217/intelli-bistro.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/yuesei217/intelli-bistro/issues"
+  },
+  "homepage": "https://github.com/yuesei217/intelli-bistro#readme",
+  "dependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
