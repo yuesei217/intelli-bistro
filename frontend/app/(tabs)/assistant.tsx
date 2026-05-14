@@ -1,8 +1,12 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import {
   View, Text, FlatList, TextInput, TouchableOpacity,
   KeyboardAvoidingView, Platform, StatusBar,
 } from 'react-native';
+import Animated, {
+  useSharedValue, useAnimatedStyle, withRepeat, withSequence,
+  withTiming, withDelay, Easing,
+} from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../src/constants/colors';
@@ -69,14 +73,42 @@ async function sendToBackend(message: string, cart: ReturnType<typeof useCartSto
   }
 }
 
+function Dot({ delay }: { delay: number }) {
+  const translateY = useSharedValue(0);
+
+  useEffect(() => {
+    translateY.value = withDelay(
+      delay,
+      withRepeat(
+        withSequence(
+          withTiming(-6, { duration: 300, easing: Easing.out(Easing.quad) }),
+          withTiming(0, { duration: 300, easing: Easing.in(Easing.quad) }),
+          withTiming(0, { duration: 200 }),
+        ),
+        -1,
+      ),
+    );
+  }, []);
+
+  const style = useAnimatedStyle(() => ({ transform: [{ translateY: translateY.value }] }));
+
+  return (
+    <Animated.View
+      style={[{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: Colors.muted, marginHorizontal: 2 }, style]}
+    />
+  );
+}
+
 function TypingIndicator() {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal: 16, paddingBottom: 12, gap: 8 }}>
       <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: Colors.primary, alignItems: 'center', justifyContent: 'center' }}>
         <Ionicons name="sparkles" size={14} color="#1A0A00" />
       </View>
-      <View style={{ backgroundColor: Colors.surface, borderRadius: 16, borderBottomLeftRadius: 4, paddingHorizontal: 16, paddingVertical: 12, borderWidth: 1, borderColor: Colors.border }}>
-        <Text style={{ color: Colors.muted, fontSize: 20, letterSpacing: 4 }}>• • •</Text>
+      <View style={{ backgroundColor: Colors.surface, borderRadius: 16, borderBottomLeftRadius: 4, paddingHorizontal: 16, paddingVertical: 14, borderWidth: 1, borderColor: Colors.border, flexDirection: 'row', alignItems: 'center' }}>
+        <Dot delay={0} />
+        <Dot delay={150} />
+        <Dot delay={300} />
       </View>
     </View>
   );
