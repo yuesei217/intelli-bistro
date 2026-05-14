@@ -1,0 +1,15 @@
+# dependencies
+node_modules/
+package-lock.json
+
+# env files — never commit
+.env
+.env.local
+.env.*.local
+
+# build output
+dist/
+build/
+
+# OS
+.DS_Store
