@@ -130,7 +130,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: 'Premium Italian sparkling mineral water',
     price: 4,
     category: 'drink',
-    imageUrl: 'https://images.unsplash.com/photo-1543253687-c931c8e981d5?w=600&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=600&q=80',
     tags: ['vegetarian'],
     options: {
       size: ['Regular', 'Large'],
