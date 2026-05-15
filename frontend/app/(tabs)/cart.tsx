@@ -83,26 +83,49 @@ export default function CartScreen() {
     return (
       <View style={{ flex: 1, backgroundColor: Colors.bg }}>
         <StatusBar barStyle="light-content" />
-        <SafeAreaView style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ fontSize: 56, marginBottom: 16 }}>🛒</Text>
-          <Text style={{ color: Colors.text, fontSize: 20, fontWeight: '700', marginBottom: 8 }}>Your cart is empty</Text>
-          <Text style={{ color: Colors.muted, fontSize: 14, marginBottom: 32, textAlign: 'center', paddingHorizontal: 40 }}>
-            Browse our menu or ask Bistro AI to add items for you
-          </Text>
-          <TouchableOpacity
-            onPress={() => router.push('/(tabs)/menu')}
-            style={{ backgroundColor: Colors.primary, borderRadius: 14, paddingVertical: 14, paddingHorizontal: 28 }}
-            activeOpacity={0.85}
-          >
-            <Text style={{ color: '#1A0A00', fontSize: 15, fontWeight: '800' }}>Browse Menu</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => router.push('/(tabs)/assistant')}
-            style={{ marginTop: 12, paddingVertical: 14, paddingHorizontal: 28 }}
-            activeOpacity={0.75}
-          >
-            <Text style={{ color: Colors.primary, fontSize: 14, fontWeight: '700' }}>✦  Ask Bistro AI</Text>
-          </TouchableOpacity>
+        <SafeAreaView style={{ flex: 1 }}>
+          {/* Header */}
+          <View style={{ paddingHorizontal: 20, paddingTop: 4, paddingBottom: 16 }}>
+            <Text style={{ color: Colors.text, fontSize: 24, fontWeight: '700' }}>Your Order</Text>
+          </View>
+
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 40 }}>
+            {/* Illustration */}
+            <View style={{ alignItems: 'center', justifyContent: 'center', marginBottom: 32 }}>
+              <View style={{ width: 120, height: 120, borderRadius: 60, backgroundColor: Colors.card, borderWidth: 1, borderColor: Colors.border, alignItems: 'center', justifyContent: 'center' }}>
+                <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: Colors.surface, alignItems: 'center', justifyContent: 'center' }}>
+                  <Text style={{ fontSize: 40 }}>🍽️</Text>
+                </View>
+              </View>
+              {/* Decorative dots */}
+              <View style={{ position: 'absolute', top: 8, right: 8, width: 10, height: 10, borderRadius: 5, backgroundColor: Colors.primary, opacity: 0.5 }} />
+              <View style={{ position: 'absolute', bottom: 10, left: 10, width: 6, height: 6, borderRadius: 3, backgroundColor: Colors.primary, opacity: 0.3 }} />
+            </View>
+
+            <Text style={{ color: Colors.text, fontSize: 22, fontWeight: '800', marginBottom: 10, textAlign: 'center' }}>
+              Your cart is empty
+            </Text>
+            <Text style={{ color: Colors.muted, fontSize: 14, lineHeight: 22, textAlign: 'center', marginBottom: 40 }}>
+              Browse our menu or tell Bistro AI what you'd like — your cart will update instantly.
+            </Text>
+
+            {/* Buttons */}
+            <TouchableOpacity
+              onPress={() => router.push('/(tabs)/menu')}
+              style={{ backgroundColor: Colors.primary, borderRadius: 14, paddingVertical: 15, paddingHorizontal: 36, width: '100%', alignItems: 'center', marginBottom: 12 }}
+              activeOpacity={0.85}
+            >
+              <Text style={{ color: '#1A0A00', fontSize: 15, fontWeight: '800' }}>Browse Menu →</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => router.push('/(tabs)/assistant')}
+              style={{ backgroundColor: Colors.surface, borderRadius: 14, paddingVertical: 15, paddingHorizontal: 36, width: '100%', alignItems: 'center', borderWidth: 1, borderColor: Colors.border }}
+              activeOpacity={0.8}
+            >
+              <Text style={{ color: Colors.primary, fontSize: 15, fontWeight: '700' }}>✦  Ask Bistro AI</Text>
+            </TouchableOpacity>
+          </View>
         </SafeAreaView>
       </View>
     );

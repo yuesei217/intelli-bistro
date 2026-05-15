@@ -116,6 +116,7 @@ function TypingIndicator() {
 
 function ChatBubble({ message }: { message: ChatMessage }) {
   const isUser = message.role === 'user';
+  const isError = message.isError === true;
   return (
     <View style={{
       flexDirection: isUser ? 'row-reverse' : 'row',
@@ -125,8 +126,8 @@ function ChatBubble({ message }: { message: ChatMessage }) {
       gap: 8,
     }}>
       {!isUser && (
-        <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: Colors.primary, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <Ionicons name="sparkles" size={14} color="#1A0A00" />
+        <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: isError ? Colors.accent : Colors.primary, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Ionicons name={isError ? 'warning-outline' : 'sparkles'} size={14} color={isError ? '#fff' : '#1A0A00'} />
         </View>
       )}
       <View style={{
@@ -138,9 +139,9 @@ function ChatBubble({ message }: { message: ChatMessage }) {
         paddingHorizontal: 14,
         paddingVertical: 10,
         borderWidth: isUser ? 0 : 1,
-        borderColor: Colors.border,
+        borderColor: isError ? Colors.accent : Colors.border,
       }}>
-        <Text style={{ color: isUser ? '#1A0A00' : Colors.text, fontSize: 14, lineHeight: 20 }}>
+        <Text style={{ color: isUser ? '#1A0A00' : isError ? Colors.accent : Colors.text, fontSize: 14, lineHeight: 20 }}>
           {message.content}
         </Text>
       </View>
@@ -164,13 +165,22 @@ export default function AssistantScreen() {
     setMessages((prev) => [...prev, userMsg]);
     setIsLoading(true);
 
-    const response = await sendToBackend(trimmed, items, messages);
-
-    const aiMsg: ChatMessage = { id: `a-${Date.now()}`, role: 'assistant', content: response.reply, timestamp: Date.now() };
-    setMessages((prev) => [...prev, aiMsg]);
-
-    if (response.actions?.length > 0) {
-      dispatchAIActions(response.actions);
+    try {
+      const response = await sendToBackend(trimmed, items, messages);
+      const aiMsg: ChatMessage = { id: `a-${Date.now()}`, role: 'assistant', content: response.reply, timestamp: Date.now() };
+      setMessages((prev) => [...prev, aiMsg]);
+      if (response.actions?.length > 0) {
+        dispatchAIActions(response.actions);
+      }
+    } catch {
+      const errMsg: ChatMessage = {
+        id: `err-${Date.now()}`,
+        role: 'assistant',
+        content: 'Bistro AI is unavailable right now. Please try again.',
+        timestamp: Date.now(),
+        isError: true,
+      };
+      setMessages((prev) => [...prev, errMsg]);
     }
     setIsLoading(false);
   }, [isLoading, items, messages, dispatchAIActions]);

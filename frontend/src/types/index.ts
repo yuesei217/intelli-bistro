@@ -48,6 +48,7 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp: number;
+  isError?: boolean;
 }
 
 export interface AIRequest {
