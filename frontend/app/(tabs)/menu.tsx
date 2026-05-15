@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
-import { View, Text, FlatList, Image, TouchableOpacity, TextInput, StatusBar, ScrollView } from 'react-native';
+import { View, Text, FlatList, Image, Pressable, TouchableOpacity, TextInput, StatusBar, ScrollView } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../src/constants/colors';
@@ -11,67 +12,75 @@ function MenuCard({ item }: { item: MenuItem }) {
   const addItem = useCartStore((s) => s.addItem);
   const cartItems = useCartStore((s) => s.items);
   const inCart = cartItems.find((i) => i.menuItemId === item.id);
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
 
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={() => addItem(item.id, 1)}
-      activeOpacity={0.82}
-      style={{
-        flex: 1,
-        margin: 6,
-        backgroundColor: Colors.card,
-        borderRadius: 16,
-        overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: inCart ? Colors.primary : Colors.border,
-      }}
+      onPressIn={() => { scale.value = withSpring(0.95, { damping: 15, stiffness: 300 }); }}
+      onPressOut={() => { scale.value = withSpring(1, { damping: 12, stiffness: 200 }); }}
+      style={{ flex: 1, margin: 6 }}
     >
-      <Image source={{ uri: item.imageUrl }} style={{ width: '100%', height: 130 }} resizeMode="cover" />
+      <Animated.View
+        style={[{
+          backgroundColor: Colors.card,
+          borderRadius: 16,
+          overflow: 'hidden',
+          borderWidth: 1,
+          borderColor: inCart ? Colors.primary : Colors.border,
+        }, animatedStyle]}
+      >
+        <Image source={{ uri: item.imageUrl }} style={{ width: '100%', height: 130 }} resizeMode="cover" />
 
-      {/* Tags */}
-      <View style={{ position: 'absolute', top: 8, left: 8, flexDirection: 'row', gap: 4 }}>
-        {item.tags.includes('popular') && (
-          <View style={{ backgroundColor: Colors.primary, borderRadius: 8, paddingHorizontal: 7, paddingVertical: 2 }}>
-            <Text style={{ color: '#1A0A00', fontSize: 10, fontWeight: '800' }}>Popular</Text>
-          </View>
-        )}
-        {item.tags.includes('chef-pick') && (
-          <View style={{ backgroundColor: Colors.accent, borderRadius: 8, paddingHorizontal: 7, paddingVertical: 2 }}>
-            <Text style={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>Chef's Pick</Text>
-          </View>
-        )}
-      </View>
+        {/* Tags */}
+        <View style={{ position: 'absolute', top: 8, left: 8, flexDirection: 'row', gap: 4 }}>
+          {item.tags.includes('popular') && (
+            <View style={{ backgroundColor: Colors.primary, borderRadius: 8, paddingHorizontal: 7, paddingVertical: 2 }}>
+              <Text style={{ color: '#1A0A00', fontSize: 10, fontWeight: '800' }}>Popular</Text>
+            </View>
+          )}
+          {item.tags.includes('chef-pick') && (
+            <View style={{ backgroundColor: Colors.accent, borderRadius: 8, paddingHorizontal: 7, paddingVertical: 2 }}>
+              <Text style={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>Chef's Pick</Text>
+            </View>
+          )}
+        </View>
 
-      <View style={{ padding: 10 }}>
-        <Text style={{ color: Colors.text, fontSize: 13, fontWeight: '700', marginBottom: 3 }} numberOfLines={1}>
-          {item.name}
-        </Text>
-        <Text style={{ color: Colors.muted, fontSize: 11, lineHeight: 15, marginBottom: 8 }} numberOfLines={2}>
-          {item.description}
-        </Text>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text style={{ color: Colors.primary, fontSize: 15, fontWeight: '800' }}>${item.price}</Text>
-          <View
-            style={{
-              backgroundColor: inCart ? Colors.primary : Colors.surface,
-              borderRadius: 12,
-              width: 28,
-              height: 28,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderWidth: inCart ? 0 : 1,
-              borderColor: Colors.border,
-            }}
-          >
-            {inCart ? (
-              <Text style={{ color: '#1A0A00', fontSize: 11, fontWeight: '800' }}>{inCart.quantity}</Text>
-            ) : (
-              <Ionicons name="add" size={17} color={Colors.muted} />
-            )}
+        <View style={{ padding: 10 }}>
+          <Text style={{ color: Colors.text, fontSize: 13, fontWeight: '700', marginBottom: 3 }} numberOfLines={1}>
+            {item.name}
+          </Text>
+          <Text style={{ color: Colors.muted, fontSize: 11, lineHeight: 15, marginBottom: 8 }} numberOfLines={2}>
+            {item.description}
+          </Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Text style={{ color: Colors.primary, fontSize: 15, fontWeight: '800' }}>${item.price}</Text>
+            <View
+              style={{
+                backgroundColor: inCart ? Colors.primary : Colors.surface,
+                borderRadius: 12,
+                width: 28,
+                height: 28,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderWidth: inCart ? 0 : 1,
+                borderColor: Colors.border,
+              }}
+            >
+              {inCart ? (
+                <Text style={{ color: '#1A0A00', fontSize: 11, fontWeight: '800' }}>{inCart.quantity}</Text>
+              ) : (
+                <Ionicons name="add" size={17} color={Colors.muted} />
+              )}
+            </View>
           </View>
         </View>
-      </View>
-    </TouchableOpacity>
+      </Animated.View>
+    </Pressable>
   );
 }
 
