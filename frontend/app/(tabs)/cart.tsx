@@ -69,7 +69,10 @@ function CartItemRow({ item }: { item: CartItem }) {
 }
 
 export default function CartScreen() {
-  const { items, subtotal, tax, total, clearCart } = useCartStore();
+  const { items, clearCart } = useCartStore();
+  const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const tax = subtotal * 0.08;
+  const total = subtotal + tax;
 
   const handleCheckout = () => {
     Alert.alert(
