@@ -123,38 +123,42 @@ export default function MenuScreen() {
         </View>
 
         {/* Category Filter */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 14, gap: 8 }}
-        >
-          {CATEGORIES.map((cat) => (
-            <TouchableOpacity
-              key={cat.key}
-              onPress={() => setActiveCategory(cat.key)}
-              style={{
-                paddingVertical: 7,
-                paddingHorizontal: 16,
-                borderRadius: 20,
-                backgroundColor: activeCategory === cat.key ? Colors.primary : Colors.card,
-                borderWidth: 1,
-                borderColor: activeCategory === cat.key ? Colors.primary : Colors.border,
-              }}
-              activeOpacity={0.8}
-            >
-              <Text style={{
-                color: activeCategory === cat.key ? '#1A0A00' : Colors.text,
-                fontSize: 13,
-                fontWeight: '700',
-              }}>
-                {cat.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+        <View style={{ height: 40, marginBottom: 8 }}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 20 }}
+          >
+            {CATEGORIES.map((cat) => (
+              <TouchableOpacity
+                key={cat.key}
+                onPress={() => setActiveCategory(cat.key)}
+                style={{
+                  paddingVertical: 7,
+                  paddingHorizontal: 16,
+                  borderRadius: 20,
+                  marginRight: 8,
+                  backgroundColor: activeCategory === cat.key ? Colors.primary : Colors.card,
+                  borderWidth: 1,
+                  borderColor: activeCategory === cat.key ? Colors.primary : Colors.border,
+                }}
+                activeOpacity={0.8}
+              >
+                <Text style={{
+                  color: activeCategory === cat.key ? '#1A0A00' : Colors.text,
+                  fontSize: 13,
+                  fontWeight: '700',
+                }}>
+                  {cat.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
 
         {/* Grid */}
         <FlatList
+          style={{ flex: 1 }}
           data={filtered}
           keyExtractor={(item) => item.id}
           numColumns={2}
