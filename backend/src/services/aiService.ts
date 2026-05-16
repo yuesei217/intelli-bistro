@@ -17,6 +17,7 @@ const CartActionSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('UPDATE_QUANTITY'), itemId: z.string(), quantity: z.number().int().nonnegative() }),
   z.object({ type: z.literal('MODIFY_ITEM'),     itemId: z.string(), options: ItemOptionsSchema }),
   z.object({ type: z.literal('CLEAR_CART') }),
+  z.object({ type: z.literal('SET_ORDER_TYPE'),  orderType: z.enum(['pickup', 'delivery']) }),
 ]);
 
 const AIResponseSchema = z.object({
@@ -58,7 +59,8 @@ VALID ACTION TYPES:
 - { "type": "REMOVE_ITEM", "itemId": string }
 - { "type": "UPDATE_QUANTITY", "itemId": string, "quantity": number }
 - { "type": "MODIFY_ITEM", "itemId": string, "options": { ... } }
-- { "type": "CLEAR_CART" }`;
+- { "type": "CLEAR_CART" }
+- { "type": "SET_ORDER_TYPE", "orderType": "pickup"|"delivery" } — use when the guest mentions pickup or delivery`;
 }
 
 function buildCartSummary(cart: AIOrderRequest['cart']): string {
@@ -85,6 +87,7 @@ export async function processOrder(req: AIOrderRequest): Promise<AIOrderResponse
     { role: 'user', content: req.message },
   ];
 
+  console.log(`[aiService] calling Claude | cart: "${cartSummary}" | msgs: ${messages.length}`);
   try {
     const response = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
@@ -94,6 +97,7 @@ export async function processOrder(req: AIOrderRequest): Promise<AIOrderResponse
     });
 
     const rawText = response.content[0].type === 'text' ? response.content[0].text : '';
+    console.log(`[aiService] raw Claude response: ${rawText.slice(0, 120)}`);
 
     // Strip markdown code fences if Claude wraps in ```json
     const cleaned = rawText.replace(/^```json?\s*/i, '').replace(/\s*```$/i, '').trim();
@@ -106,9 +110,10 @@ export async function processOrder(req: AIOrderRequest): Promise<AIOrderResponse
       (a) => !('itemId' in a) || MENU_LOOKUP.has((a as { itemId: string }).itemId)
     );
 
+    console.log(`[aiService] ✅ success | actions: ${validated.actions.length}`);
     return validated;
   } catch (err) {
-    console.error('[aiService] error:', err);
+    console.error('[aiService] ❌ error:', err);
     return FALLBACK_RESPONSE;
   }
 }

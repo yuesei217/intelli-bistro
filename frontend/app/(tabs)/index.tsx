@@ -19,6 +19,7 @@ const featured = MENU_ITEMS.filter((m) => FEATURED_IDS.includes(m.id));
 
 export default function HomeScreen() {
   const addItem = useCartStore((s) => s.addItem);
+  const cartItems = useCartStore((s) => s.items);
 
   return (
     <View style={{ flex: 1, backgroundColor: Colors.bg }}>
@@ -77,36 +78,52 @@ export default function HomeScreen() {
             </View>
 
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingLeft: 20, paddingRight: 8 }}>
-              {featured.map((item) => (
-                <TouchableOpacity
-                  key={item.id}
-                  activeOpacity={0.82}
-                  onPress={() => addItem(item.id, 1)}
-                  style={{
-                    width: 186,
-                    marginRight: 12,
-                    backgroundColor: Colors.card,
-                    borderRadius: 16,
-                    overflow: 'hidden',
-                    borderWidth: 1,
-                    borderColor: Colors.border,
-                  }}
-                >
-                  <Image source={{ uri: item.imageUrl }} style={{ width: '100%', height: 120 }} resizeMode="cover" />
-                  <LinearGradient colors={['transparent', 'rgba(15,10,6,0.8)']} style={{ position: 'absolute', top: 60, left: 0, right: 0, height: 60 }} />
-                  <View style={{ padding: 12 }}>
-                    <Text style={{ color: Colors.text, fontSize: 14, fontWeight: '700', marginBottom: 6 }} numberOfLines={1}>
-                      {item.name}
-                    </Text>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '800' }}>${item.price}</Text>
-                      <View style={{ backgroundColor: Colors.primary, borderRadius: 12, width: 26, height: 26, alignItems: 'center', justifyContent: 'center' }}>
-                        <Ionicons name="add" size={17} color="#1A0A00" />
+              {featured.map((item) => {
+                const inCart = cartItems.find((i) => i.menuItemId === item.id);
+                return (
+                  <TouchableOpacity
+                    key={item.id}
+                    activeOpacity={0.82}
+                    onPress={() => addItem(item.id, 1)}
+                    style={{
+                      width: 186,
+                      marginRight: 12,
+                      backgroundColor: Colors.card,
+                      borderRadius: 16,
+                      overflow: 'hidden',
+                      borderWidth: 1,
+                      borderColor: inCart ? Colors.primary : Colors.border,
+                    }}
+                  >
+                    <Image source={{ uri: item.imageUrl }} style={{ width: '100%', height: 120 }} resizeMode="cover" />
+                    <LinearGradient colors={['transparent', 'rgba(15,10,6,0.8)']} style={{ position: 'absolute', top: 60, left: 0, right: 0, height: 60 }} />
+                    <View style={{ padding: 12 }}>
+                      <Text style={{ color: Colors.text, fontSize: 14, fontWeight: '700', marginBottom: 6 }} numberOfLines={1}>
+                        {item.name}
+                      </Text>
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '800' }}>${item.price}</Text>
+                        <View style={{
+                          backgroundColor: inCart ? Colors.primary : Colors.surface,
+                          borderRadius: 12,
+                          width: 26,
+                          height: 26,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderWidth: inCart ? 0 : 1,
+                          borderColor: Colors.border,
+                        }}>
+                          {inCart ? (
+                            <Text style={{ color: '#1A0A00', fontSize: 11, fontWeight: '800' }}>{inCart.quantity}</Text>
+                          ) : (
+                            <Ionicons name="add" size={17} color={Colors.muted} />
+                          )}
+                        </View>
                       </View>
                     </View>
-                  </View>
-                </TouchableOpacity>
-              ))}
+                  </TouchableOpacity>
+                );
+              })}
             </ScrollView>
           </View>
 

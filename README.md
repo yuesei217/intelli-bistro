@@ -86,18 +86,15 @@ cd ../frontend
 npm install
 ```
 
-### 5. Frontend — set your backend URL
+### 5. Frontend — backend URL
 
-Open `frontend/src/constants/config.ts` and update the URL:
+No manual config needed. The start scripts automatically detect your Mac's current LAN IP:
 
-```typescript
-// iOS Simulator:
-export const API_BASE_URL = 'http://localhost:3001';
-
-// Physical device (replace with your Mac's LAN IP):
-// Run `ipconfig getifaddr en0` in terminal to find your IP
-export const API_BASE_URL = 'http://192.168.x.x:3001';
+```bash
+npm run dev        # IP injected automatically via $(ipconfig getifaddr en0)
 ```
+
+> **iOS Simulator only:** If running on simulator instead of a physical device, edit `frontend/.env` and set `EXPO_PUBLIC_API_URL=http://localhost:3001`.
 
 ### 6. Run both servers
 

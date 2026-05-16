@@ -33,10 +33,11 @@ export interface AIOrderRequest {
 }
 
 export interface CartAction {
-  type: 'ADD_ITEM' | 'REMOVE_ITEM' | 'UPDATE_QUANTITY' | 'MODIFY_ITEM' | 'CLEAR_CART';
+  type: 'ADD_ITEM' | 'REMOVE_ITEM' | 'UPDATE_QUANTITY' | 'MODIFY_ITEM' | 'CLEAR_CART' | 'SET_ORDER_TYPE';
   itemId?: string;
   quantity?: number;
   options?: { size?: string; spiceLevel?: string };
+  orderType?: 'pickup' | 'delivery';
 }
 
 export interface AIOrderResponse {

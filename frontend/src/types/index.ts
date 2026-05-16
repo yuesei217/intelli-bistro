@@ -29,25 +29,30 @@ export interface CartItem {
   options?: ItemOptions;
 }
 
+export type OrderType = 'pickup' | 'delivery';
+
 export type CartActionType =
   | 'ADD_ITEM'
   | 'REMOVE_ITEM'
   | 'UPDATE_QUANTITY'
   | 'MODIFY_ITEM'
-  | 'CLEAR_CART';
+  | 'CLEAR_CART'
+  | 'SET_ORDER_TYPE';
 
 export type CartAction =
   | { type: 'ADD_ITEM'; itemId: string; quantity: number; options?: ItemOptions }
   | { type: 'REMOVE_ITEM'; itemId: string; options?: ItemOptions }
   | { type: 'UPDATE_QUANTITY'; itemId: string; quantity: number; options?: ItemOptions }
   | { type: 'MODIFY_ITEM'; itemId: string; options: ItemOptions }
-  | { type: 'CLEAR_CART' };
+  | { type: 'CLEAR_CART' }
+  | { type: 'SET_ORDER_TYPE'; orderType: OrderType };
 
 export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   timestamp: number;
+  isError?: boolean;
 }
 
 export interface AIRequest {

@@ -1,5 +1,13 @@
-// iOS Simulator: use http://localhost:3001
-// Physical device (same WiFi): run `ipconfig getifaddr en0` to get your Mac's LAN IP
-export const API_BASE_URL = __DEV__
-  ? 'http://10.0.0.144:3001'
-  : 'https://your-production-url.com';
+import Constants from 'expo-constants';
+
+function getApiBaseUrl(): string {
+  // In development: derive host from Metro's own address so it works on real devices
+  // without any IP configuration. hostUri is e.g. "10.0.0.144:8081".
+  if (__DEV__) {
+    const host = (Constants.expoConfig?.hostUri ?? 'localhost:8081').split(':')[0];
+    return `http://${host}:3001`;
+  }
+  return process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
+}
+
+export const API_BASE_URL = getApiBaseUrl();
