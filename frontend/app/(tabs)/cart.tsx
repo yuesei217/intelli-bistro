@@ -1,4 +1,5 @@
-import { View, Text, FlatList, Image, TouchableOpacity, StatusBar, Alert } from 'react-native';
+import { View, Text, FlatList, Image, TouchableOpacity, StatusBar, Modal } from 'react-native';
+import { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -69,18 +70,15 @@ function CartItemRow({ item }: { item: CartItem }) {
 }
 
 export default function CartScreen() {
-  const { items, clearCart } = useCartStore();
+  const { items, orderType, setOrderType, clearCart } = useCartStore();
   const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
   const tax = subtotal * 0.08;
   const total = subtotal + tax;
+  const [confirmed, setConfirmed] = useState(false);
+  const [orderNumber] = useState(() => Math.floor(1000 + Math.random() * 9000));
 
-  const handleCheckout = () => {
-    Alert.alert(
-      'Order Placed! 🎉',
-      `Your order of $${total.toFixed(2)} has been sent to the kitchen. Thank you!`,
-      [{ text: 'Great!', onPress: clearCart }]
-    );
-  };
+  const handleCheckout = () => setConfirmed(true);
+  const handleDone = () => { setConfirmed(false); clearCart(); };
 
   if (items.length === 0) {
     return (
@@ -137,13 +135,79 @@ export default function CartScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: Colors.bg }}>
       <StatusBar barStyle="light-content" />
+
+      {/* Confirmation Modal */}
+      <Modal visible={confirmed} transparent animationType="fade">
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
+          <View style={{ backgroundColor: Colors.card, borderRadius: 24, padding: 28, width: '100%', borderWidth: 1, borderColor: Colors.border, alignItems: 'center' }}>
+            <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: Colors.success + '22', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+              <Ionicons name="checkmark-circle" size={40} color={Colors.success} />
+            </View>
+            <Text style={{ color: Colors.text, fontSize: 20, fontWeight: '800', marginBottom: 6 }}>Order Confirmed!</Text>
+            <Text style={{ color: Colors.muted, fontSize: 13, marginBottom: 24 }}>Order #{orderNumber}</Text>
+
+            <View style={{ width: '100%', backgroundColor: Colors.surface, borderRadius: 14, padding: 16, borderWidth: 1, borderColor: Colors.border, gap: 12, marginBottom: 24 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <Ionicons name="time-outline" size={18} color={Colors.primary} />
+                <View>
+                  <Text style={{ color: Colors.muted, fontSize: 11, fontWeight: '600' }}>PICKUP TIME</Text>
+                  <Text style={{ color: Colors.text, fontSize: 14, fontWeight: '700' }}>15 – 20 minutes</Text>
+                </View>
+              </View>
+              <View style={{ height: 1, backgroundColor: Colors.border }} />
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <Ionicons name="location-outline" size={18} color={Colors.primary} />
+                <View>
+                  <Text style={{ color: Colors.muted, fontSize: 11, fontWeight: '600' }}>PICKUP LOCATION</Text>
+                  <Text style={{ color: Colors.text, fontSize: 14, fontWeight: '700' }}>The Intelligent Bistro</Text>
+                  <Text style={{ color: Colors.muted, fontSize: 12 }}>123 Market Street</Text>
+                </View>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              onPress={handleDone}
+              style={{ backgroundColor: Colors.primary, borderRadius: 14, paddingVertical: 14, width: '100%', alignItems: 'center' }}
+              activeOpacity={0.85}
+            >
+              <Text style={{ color: '#1A0A00', fontSize: 15, fontWeight: '800' }}>Done</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       <SafeAreaView style={{ flex: 1 }}>
 
         {/* Header */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 4, paddingBottom: 16 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 4, paddingBottom: 12 }}>
           <Text style={{ color: Colors.text, fontSize: 24, fontWeight: '700' }}>Your Order</Text>
           <TouchableOpacity onPress={clearCart}>
             <Text style={{ color: Colors.muted, fontSize: 13, fontWeight: '600' }}>Clear all</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Order Type Selector */}
+        <View style={{ flexDirection: 'row', marginHorizontal: 20, marginBottom: 14, backgroundColor: Colors.surface, borderRadius: 14, padding: 4, borderWidth: 1, borderColor: Colors.border }}>
+          <TouchableOpacity
+            onPress={() => setOrderType('pickup')}
+            style={{ flex: 1, paddingVertical: 9, borderRadius: 10, backgroundColor: orderType === 'pickup' ? Colors.primary : 'transparent', alignItems: 'center' }}
+            activeOpacity={0.8}
+          >
+            <Text style={{ color: orderType === 'pickup' ? '#1A0A00' : Colors.muted, fontSize: 14, fontWeight: '700' }}>
+              🏃 Pickup
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => setOrderType('delivery')}
+            style={{ flex: 1, paddingVertical: 9, borderRadius: 10, backgroundColor: orderType === 'delivery' ? Colors.primary : 'transparent', alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 6 }}
+            activeOpacity={0.8}
+          >
+            <Text style={{ color: orderType === 'delivery' ? '#1A0A00' : Colors.muted, fontSize: 14, fontWeight: '700' }}>
+              🛵 Delivery
+            </Text>
+            <View style={{ backgroundColor: Colors.border, borderRadius: 6, paddingHorizontal: 5, paddingVertical: 2 }}>
+              <Text style={{ color: Colors.muted, fontSize: 9, fontWeight: '700' }}>SOON</Text>
+            </View>
           </TouchableOpacity>
         </View>
 
@@ -205,7 +269,7 @@ export default function CartScreen() {
             activeOpacity={0.85}
           >
             <Text style={{ color: '#1A0A00', fontSize: 16, fontWeight: '800' }}>
-              Place Order · ${total.toFixed(2)}
+              {orderType === 'pickup' ? '🏃 Place Pickup Order' : '🛵 Place Delivery Order'} · ${total.toFixed(2)}
             </Text>
           </TouchableOpacity>
         </View>

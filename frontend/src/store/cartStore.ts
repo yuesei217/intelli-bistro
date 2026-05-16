@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { CartItem, CartAction, ItemOptions } from '../types';
+import { CartItem, CartAction, ItemOptions, OrderType } from '../types';
 import { getMenuItem } from '../data/menu';
 
 function getCartItemKey(menuItemId: string, options?: ItemOptions): string {
@@ -13,11 +13,13 @@ function getCartItemKey(menuItemId: string, options?: ItemOptions): string {
 
 interface CartStore {
   items: CartItem[];
+  orderType: OrderType;
   addItem: (menuItemId: string, quantity?: number, options?: ItemOptions) => void;
   removeItem: (cartItemId: string) => void;
   updateQuantity: (cartItemId: string, quantity: number) => void;
   modifyItem: (cartItemId: string, options: ItemOptions) => void;
   clearCart: () => void;
+  setOrderType: (type: OrderType) => void;
   dispatchAIActions: (actions: CartAction[]) => void;
   itemCount: number;
   subtotal: number;
@@ -27,6 +29,7 @@ interface CartStore {
 
 export const useCartStore = create<CartStore>((set, get) => ({
   items: [],
+  orderType: 'pickup',
 
   addItem: (menuItemId, quantity = 1, options) => {
     const menuItem = getMenuItem(menuItemId);
@@ -87,6 +90,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
   },
 
   clearCart: () => set({ items: [] }),
+  setOrderType: (orderType) => set({ orderType }),
 
   dispatchAIActions: (actions) => {
     const { addItem, removeItem, updateQuantity, modifyItem, clearCart } = get();
@@ -112,6 +116,9 @@ export const useCartStore = create<CartStore>((set, get) => ({
         }
         case 'CLEAR_CART':
           clearCart();
+          break;
+        case 'SET_ORDER_TYPE':
+          get().setOrderType(action.orderType);
           break;
       }
     });
