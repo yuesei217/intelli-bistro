@@ -69,15 +69,21 @@ function CartItemRow({ item }: { item: CartItem }) {
   );
 }
 
+const DELIVERY_FEE = 3.99;
+
 export default function CartScreen() {
   const { items, orderType, setOrderType, clearCart } = useCartStore();
   const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const deliveryFee = orderType === 'delivery' ? DELIVERY_FEE : 0;
   const tax = subtotal * 0.08;
-  const total = subtotal + tax;
+  const total = subtotal + deliveryFee + tax;
+  const [reviewing, setReviewing] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const [orderNumber] = useState(() => Math.floor(1000 + Math.random() * 9000));
 
-  const handleCheckout = () => setConfirmed(true);
+  const handleCheckout = () => setReviewing(true);
+  const handleCancel = () => setReviewing(false);
+  const handleConfirm = () => { setReviewing(false); setConfirmed(true); };
   const handleDone = () => { setConfirmed(false); clearCart(); };
 
   if (items.length === 0) {
@@ -136,6 +142,55 @@ export default function CartScreen() {
     <View style={{ flex: 1, backgroundColor: Colors.bg }}>
       <StatusBar barStyle="light-content" />
 
+      {/* Review Modal */}
+      <Modal visible={reviewing} transparent animationType="slide">
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'flex-end' }}>
+          <View style={{ backgroundColor: Colors.card, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 28, borderWidth: 1, borderColor: Colors.border }}>
+            <Text style={{ color: Colors.text, fontSize: 19, fontWeight: '800', marginBottom: 4 }}>
+              {orderType === 'pickup' ? '🏃 Confirm Pickup' : '🛵 Confirm Delivery'}
+            </Text>
+            <Text style={{ color: Colors.muted, fontSize: 13, marginBottom: 20 }}>
+              {orderType === 'pickup' ? '123 Market Street · ~15–20 min' : '456 Elm Avenue, Apt 3B · ~35–50 min'}
+            </Text>
+
+            {/* Item list */}
+            <View style={{ gap: 8, marginBottom: 20 }}>
+              {items.map((i) => (
+                <View key={i.cartItemId} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <Text style={{ color: Colors.text, fontSize: 14 }} numberOfLines={1}>
+                    {i.quantity}× {i.name}
+                  </Text>
+                  <Text style={{ color: Colors.muted, fontSize: 14 }}>${(i.price * i.quantity).toFixed(2)}</Text>
+                </View>
+              ))}
+            </View>
+
+            <View style={{ height: 1, backgroundColor: Colors.border, marginBottom: 16 }} />
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 24 }}>
+              <Text style={{ color: Colors.text, fontSize: 16, fontWeight: '800' }}>Total</Text>
+              <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '800' }}>${total.toFixed(2)}</Text>
+            </View>
+
+            <View style={{ flexDirection: 'row', gap: 12 }}>
+              <TouchableOpacity
+                onPress={handleCancel}
+                style={{ flex: 1, borderRadius: 14, paddingVertical: 14, alignItems: 'center', borderWidth: 1, borderColor: Colors.border, backgroundColor: Colors.surface }}
+                activeOpacity={0.8}
+              >
+                <Text style={{ color: Colors.text, fontSize: 15, fontWeight: '700' }}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleConfirm}
+                style={{ flex: 2, borderRadius: 14, paddingVertical: 14, alignItems: 'center', backgroundColor: Colors.primary }}
+                activeOpacity={0.85}
+              >
+                <Text style={{ color: '#1A0A00', fontSize: 15, fontWeight: '800' }}>Confirm Order</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       {/* Confirmation Modal */}
       <Modal visible={confirmed} transparent animationType="fade">
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
@@ -150,17 +205,32 @@ export default function CartScreen() {
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                 <Ionicons name="time-outline" size={18} color={Colors.primary} />
                 <View>
-                  <Text style={{ color: Colors.muted, fontSize: 11, fontWeight: '600' }}>PICKUP TIME</Text>
-                  <Text style={{ color: Colors.text, fontSize: 14, fontWeight: '700' }}>15 – 20 minutes</Text>
+                  <Text style={{ color: Colors.muted, fontSize: 11, fontWeight: '600' }}>
+                    {orderType === 'pickup' ? 'PICKUP TIME' : 'ESTIMATED DELIVERY'}
+                  </Text>
+                  <Text style={{ color: Colors.text, fontSize: 14, fontWeight: '700' }}>
+                    {orderType === 'pickup' ? '15 – 20 minutes' : '35 – 50 minutes'}
+                  </Text>
                 </View>
               </View>
               <View style={{ height: 1, backgroundColor: Colors.border }} />
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                <Ionicons name="location-outline" size={18} color={Colors.primary} />
+                <Ionicons name={orderType === 'pickup' ? 'location-outline' : 'home-outline'} size={18} color={Colors.primary} />
                 <View>
-                  <Text style={{ color: Colors.muted, fontSize: 11, fontWeight: '600' }}>PICKUP LOCATION</Text>
-                  <Text style={{ color: Colors.text, fontSize: 14, fontWeight: '700' }}>The Intelligent Bistro</Text>
-                  <Text style={{ color: Colors.muted, fontSize: 12 }}>123 Market Street</Text>
+                  <Text style={{ color: Colors.muted, fontSize: 11, fontWeight: '600' }}>
+                    {orderType === 'pickup' ? 'PICKUP LOCATION' : 'DELIVERING TO'}
+                  </Text>
+                  {orderType === 'pickup' ? (
+                    <>
+                      <Text style={{ color: Colors.text, fontSize: 14, fontWeight: '700' }}>The Intelligent Bistro</Text>
+                      <Text style={{ color: Colors.muted, fontSize: 12 }}>123 Market Street</Text>
+                    </>
+                  ) : (
+                    <>
+                      <Text style={{ color: Colors.text, fontSize: 14, fontWeight: '700' }}>Your Location</Text>
+                      <Text style={{ color: Colors.muted, fontSize: 12 }}>via GPS · Delivery fee ${DELIVERY_FEE.toFixed(2)}</Text>
+                    </>
+                  )}
                 </View>
               </View>
             </View>
@@ -199,17 +269,24 @@ export default function CartScreen() {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setOrderType('delivery')}
-            style={{ flex: 1, paddingVertical: 9, borderRadius: 10, backgroundColor: orderType === 'delivery' ? Colors.primary : 'transparent', alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 6 }}
+            style={{ flex: 1, paddingVertical: 9, borderRadius: 10, backgroundColor: orderType === 'delivery' ? Colors.primary : 'transparent', alignItems: 'center' }}
             activeOpacity={0.8}
           >
             <Text style={{ color: orderType === 'delivery' ? '#1A0A00' : Colors.muted, fontSize: 14, fontWeight: '700' }}>
               🛵 Delivery
             </Text>
-            <View style={{ backgroundColor: Colors.border, borderRadius: 6, paddingHorizontal: 5, paddingVertical: 2 }}>
-              <Text style={{ color: Colors.muted, fontSize: 9, fontWeight: '700' }}>SOON</Text>
-            </View>
           </TouchableOpacity>
         </View>
+
+        {/* Delivery address strip */}
+        {orderType === 'delivery' && (
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 20, marginBottom: 12, gap: 8 }}>
+            <Ionicons name="location-outline" size={14} color={Colors.primary} />
+            <Text style={{ color: Colors.muted, fontSize: 13 }}>
+              Delivering to <Text style={{ color: Colors.text, fontWeight: '600' }}>456 Elm Avenue, Apt 3B</Text>
+            </Text>
+          </View>
+        )}
 
         <FlatList
           data={items}
@@ -247,6 +324,12 @@ export default function CartScreen() {
                   <Text style={{ color: Colors.muted, fontSize: 14 }}>Subtotal</Text>
                   <Text style={{ color: Colors.text, fontSize: 14, fontWeight: '600' }}>${subtotal.toFixed(2)}</Text>
                 </View>
+                {orderType === 'delivery' && (
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+                    <Text style={{ color: Colors.muted, fontSize: 14 }}>Delivery fee</Text>
+                    <Text style={{ color: Colors.text, fontSize: 14, fontWeight: '600' }}>${DELIVERY_FEE.toFixed(2)}</Text>
+                  </View>
+                )}
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 14 }}>
                   <Text style={{ color: Colors.muted, fontSize: 14 }}>Tax (8%)</Text>
                   <Text style={{ color: Colors.text, fontSize: 14, fontWeight: '600' }}>${tax.toFixed(2)}</Text>

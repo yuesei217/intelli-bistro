@@ -29,6 +29,7 @@ export const MENU_ITEMS: MenuItem[] = [
     options: { size: ['Regular', 'Large'] },
   },
   { id: 'craft-ipa', name: 'Craft IPA', description: 'Local brewery selection — rotating seasonal draft', price: 10, category: 'drink', imageUrl: '', tags: [] },
+  { id: 'tasting-menu', name: "Chef's 5-Course Tasting Menu", description: "A curated journey — amuse-bouche, seasonal starter, bisque, wagyu main & dessert pairing", price: 89, category: 'main', imageUrl: '', tags: ['chef-pick', 'popular'] },
   { id: 'lava-cake', name: 'Chocolate Lava Cake', description: 'Warm chocolate cake with molten center & vanilla bean ice cream', price: 14, category: 'dessert', imageUrl: '', tags: ['popular', 'vegetarian'] },
   { id: 'creme-brulee', name: 'Vanilla Crème Brûlée', description: 'Classic French custard with caramelized sugar & fresh berries', price: 12, category: 'dessert', imageUrl: '', tags: ['vegetarian'] },
 ];

@@ -204,7 +204,7 @@ export default function AssistantScreen() {
             </View>
             <View>
               <Text style={{ color: Colors.text, fontSize: 17, fontWeight: '700' }}>Bistro AI</Text>
-              <Text style={{ color: Colors.success, fontSize: 11, fontWeight: '600' }}>● Online</Text>
+              <Text style={{ color: Colors.success, fontSize: 11, fontWeight: '600' }}>● Online · 123 Market Street</Text>
             </View>
           </View>
 
