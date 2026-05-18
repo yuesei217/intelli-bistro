@@ -146,6 +146,17 @@ export const MENU_ITEMS: MenuItem[] = [
     tags: [],
   },
 
+  // Special
+  {
+    id: 'tasting-menu',
+    name: "Chef's 5-Course Tasting Menu",
+    description: 'A curated journey — amuse-bouche, seasonal starter, bisque, wagyu main & dessert pairing',
+    price: 89,
+    category: 'main',
+    imageUrl: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80',
+    tags: ['chef-pick', 'popular'],
+  },
+
   // Desserts
   {
     id: 'lava-cake',

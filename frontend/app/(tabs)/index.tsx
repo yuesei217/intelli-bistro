@@ -156,7 +156,11 @@ export default function HomeScreen() {
           </View>
 
           {/* Tonight's Special Banner */}
-          <View style={{ marginHorizontal: 20, marginBottom: 40, borderRadius: 18, overflow: 'hidden', borderWidth: 1, borderColor: Colors.border }}>
+          <TouchableOpacity
+            onPress={() => addItem('tasting-menu', 1)}
+            activeOpacity={0.85}
+            style={{ marginHorizontal: 20, marginBottom: 40, borderRadius: 18, overflow: 'hidden', borderWidth: 1, borderColor: Colors.border }}
+          >
             <Image
               source={{ uri: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80' }}
               style={{ width: '100%', height: 148 }}
@@ -168,9 +172,9 @@ export default function HomeScreen() {
             >
               <Text style={{ color: Colors.primary, fontSize: 11, fontWeight: '800', letterSpacing: 2, textTransform: 'uppercase' }}>Tonight Only</Text>
               <Text style={{ color: Colors.text, fontSize: 18, fontWeight: '700', marginTop: 3 }}>5-Course Tasting Menu</Text>
-              <Text style={{ color: Colors.muted, fontSize: 13, marginTop: 3 }}>Ask Bistro AI for details →</Text>
+              <Text style={{ color: Colors.muted, fontSize: 13, marginTop: 3 }}>$89 per person · Tap to add →</Text>
             </LinearGradient>
-          </View>
+          </TouchableOpacity>
 
         </ScrollView>
       </SafeAreaView>
