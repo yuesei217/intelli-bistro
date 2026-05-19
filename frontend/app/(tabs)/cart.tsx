@@ -72,7 +72,7 @@ function CartItemRow({ item }: { item: CartItem }) {
 const DELIVERY_FEE = 3.99;
 
 export default function CartScreen() {
-  const { items, orderType, setOrderType, clearCart } = useCartStore();
+  const { items, orderType, setOrderType, clearCart, confirmOrder } = useCartStore();
   const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
   const deliveryFee = orderType === 'delivery' ? DELIVERY_FEE : 0;
   const tax = subtotal * 0.08;
@@ -84,7 +84,7 @@ export default function CartScreen() {
   const handleCheckout = () => setReviewing(true);
   const handleCancel = () => setReviewing(false);
   const handleConfirm = () => { setReviewing(false); setConfirmed(true); };
-  const handleDone = () => { setConfirmed(false); clearCart(); };
+  const handleDone = () => { setConfirmed(false); confirmOrder(); };
 
   if (items.length === 0) {
     return (

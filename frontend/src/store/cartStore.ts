@@ -14,6 +14,7 @@ function getCartItemKey(menuItemId: string, options?: ItemOptions): string {
 interface CartStore {
   items: CartItem[];
   orderType: OrderType;
+  chatResetKey: number;
   addItem: (menuItemId: string, quantity?: number, options?: ItemOptions) => void;
   removeItem: (cartItemId: string) => void;
   updateQuantity: (cartItemId: string, quantity: number) => void;
@@ -21,6 +22,7 @@ interface CartStore {
   clearCart: () => void;
   setOrderType: (type: OrderType) => void;
   dispatchAIActions: (actions: CartAction[]) => void;
+  confirmOrder: () => void;
   itemCount: number;
   subtotal: number;
   tax: number;
@@ -30,6 +32,7 @@ interface CartStore {
 export const useCartStore = create<CartStore>((set, get) => ({
   items: [],
   orderType: 'pickup',
+  chatResetKey: 0,
 
   addItem: (menuItemId, quantity = 1, options) => {
     const menuItem = getMenuItem(menuItemId);
@@ -91,6 +94,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
 
   clearCart: () => set({ items: [] }),
   setOrderType: (orderType) => set({ orderType }),
+  confirmOrder: () => set((state) => ({ items: [], chatResetKey: state.chatResetKey + 1 })),
 
   dispatchAIActions: (actions) => {
     const { addItem, removeItem, updateQuantity, modifyItem, clearCart } = get();

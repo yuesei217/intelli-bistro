@@ -154,7 +154,12 @@ export default function AssistantScreen() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const flatListRef = useRef<FlatList>(null);
-  const { items, dispatchAIActions } = useCartStore();
+  const { items, dispatchAIActions, chatResetKey } = useCartStore();
+
+  useEffect(() => {
+    if (chatResetKey === 0) return;
+    setMessages([WELCOME_MESSAGE]);
+  }, [chatResetKey]);
 
   const send = useCallback(async (text: string) => {
     const trimmed = text.trim();
